@@ -97,7 +97,7 @@ ETH_RESET:	equ	1	;Hardware reset
 ETH_GET_HWADD:	equ	2	;Get MAC address
 
 	endif
-
+	
 ;--- TCP/IP UNAPI routines
 
 TCPIP_NET_STATE:	equ	3
@@ -124,14 +124,17 @@ ERR_NO_NETWORK:	equ	2
 ERR_NO_DNS:	equ	7
 
 ;--- Macros
-
-print:	macro	@s
-	ld	de,@s
+	; FIX: Sourceror, 15-3-2020
+	; Updated macro to make it Sjasm Plus compatible
+	macro print data
+	ld	de,data
 	ld	c,_STROUT
 	call	5
 	endm
 
-dummy:	macro
+	; FIX: Sourceror, 15-3-2020
+	; Updated macro to make it Sjasm Plus compatible
+	macro dummy
 	endm
 
 ;--- Misc constants
@@ -829,8 +832,10 @@ SRCHUNAPI_1:
 	ld	(_UN_ADDRESS),hl
 
 	cp	#FF
-	jr	nz,SRCHUNAPI_2
-	;ld	a,#FF
+	; FIX: Sourceror, 15-3-2020
+	; original only works when Ethernet UNAPI is on page 1
+	jr	z,SRCHUNAPI_2
+	ld	a,#FF
 	call	EXTBIO
 	ld	(_UN_RAMCALL),hl
 SRCHUNAPI_2:
@@ -850,8 +855,15 @@ SRCHUNAPI_2:
 	cp	#FF
 	ld	ix,RDSLT	;CALSLT: In: A=Slot, HL=Dir; Out: A=Data
 	jr	z,IS_ROM
+	; FIX: Sourceror, 15-3-2020
+	; original only works when Ethernet UNAPI is on page 1
+	; load ix with the right RAMCALL value
 	ld	b,a
+	push bc
 	ld	ix,(_UN_RAMCALL)	;RAMCALL: In: A=Slot, HL=Dir, B=Seg; Out: A=Data
+	ld bc, 3
+	add ix,bc
+	pop bc
 IS_ROM:
 
 	;>> Here IX contains READHL, RDSLT or UN_RAMCALL,

@@ -1,14 +1,15 @@
 ASM = sjasmplus
 ASMFLAGS = --raw=$@ --sym=$(basename $@).sym
-OUTPUT_DIR = ../dist
+OUTPUT_DIR = ./dist
 
 all: $(OUTPUT_DIR)/inl.com
 .PHONY: all clean copy
 
 $(OUTPUT_DIR)/inl.com: $(OUTPUT_DIR)/inl-tran.dat $(OUTPUT_DIR)/inl-res.dat
 	cat $(OUTPUT_DIR)/inl-tran.dat $(OUTPUT_DIR)/inl-res.dat > $(OUTPUT_DIR)/inl.com
-	cp $(OUTPUT_DIR)/inl.com /Users/mario/Development/msx/USB/drivers/UsbEthernet/dist/
-	cp $(OUTPUT_DIR)/inl-tran.sym /Users/mario/Development/msx/USB/drivers/UsbEthernet/dist/
+	cp $(OUTPUT_DIR)/inl.com ../../USB/drivers/UsbEthernet/dist/
+	cp $(OUTPUT_DIR)/inl-res.sym ../../USB/drivers/UsbEthernet/dist/
+	cp $(OUTPUT_DIR)/inl-tran.sym ../../USB/drivers/UsbEthernet/dist/
 
 $(OUTPUT_DIR)/inl-tran.dat: inl-tran.asm
 	$(ASM) $(ASMFLAGS) $< 

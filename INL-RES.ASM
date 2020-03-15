@@ -97,9 +97,10 @@ MAX_UDP_CONN:	equ	3
 		if LINK=1
 
 ;--- Macro to call Ethernet UNAPI routines
-
-ethnet:	macro	@d
-	ld	a,@d
+	; FIX: Sourceror, 15-3-2020
+	; Updated Macro to make is Sjasm Plus compatible
+	macro ethnet id
+	ld	a,id
 	call	EXEUNAPI
 	endm
 
@@ -5779,16 +5780,17 @@ STRLEN2:
 
 
 	;--- Macro for 32 bit addition
-
-m_add32:	macro	@a,@b	;Performs (@a) = (@a) + (@b)
-	ld	hl,(@a)
-	ld	bc,(@b)
+	; FIX: Sourceror, 15-3-2020
+	; Updated Macro to make is Sjasm Plus compatible
+	macro m_add32 ptrA,ptrB	;Performs (@a) = (@a) + (@b)
+	ld	hl,(ptrA)
+	ld	bc,(ptrB)
 	add	hl,bc
-	ld	(@a),hl
-	ld	hl,(@a+2)
-	ld	bc,(@b+2)
+	ld	(ptrA),hl
+	ld	hl,(ptrA+2)
+	ld	bc,(ptrB+2)
 	adc	hl,bc
-	ld	(@a+2),hl
+	ld	(ptrA+2),hl
 	endm
 
 
@@ -6043,19 +6045,21 @@ SHIFT2:	djnz	SHIFT
 	ret
 
 	;--- Function F
-
-nXaZ:	macro	@n	;Calculates "not(X) and Z"
-	ld	a,(ix+@n)	;for the byte @n (0 to 3)
+	; FIX: Sourceror, 15-3-2020
+	; Updated Macro to make is Sjasm Plus compatible
+	macro nXaZ val	;Calculates "not(X) and Z"
+	ld	a,(ix+val)	;for the byte @n (0 to 3)
 	cpl		;                ;of the 32-bit word
-	and	(ix+8+@n)
-	ld	(iy+@n),a
+	and	(ix+8+val)
+	ld	(iy+val),a
 	endm
-
-XaYo:	macro	@n	;Calculates "X and Y or nXaZ"
-	ld	a,(ix+@n)
-	and	(ix+4+@n)
-	or	(iy+@n)
-	ld	(iy+@n),a
+	; FIX: Sourceror, 15-3-2020
+	; Updated Macro to make is Sjasm Plus compatible
+	macro XaYo val	;Calculates "X and Y or nXaZ"
+	ld	a,(ix+val)
+	and	(ix+4+val)
+	or	(iy+val)
+	ld	(iy+val),a
 	endm
 
 FUN_F:	call	FUN_SETP
@@ -6073,19 +6077,21 @@ FUN_F:	call	FUN_SETP
 	ret
 
 	;--- Function G
-
-nZaY:	macro	@n	;Calculates "not(Z) and Y"
-	ld	a,(ix+8+@n)
+	; FIX: Sourceror, 15-3-2020
+	; Updated Macro to make is Sjasm Plus compatible
+	macro nZaY	val	;Calculates "not(Z) and Y"
+	ld	a,(ix+8+val)
 	cpl
-	and	(ix+4+@n)
-	ld	(iy+@n),a
+	and	(ix+4+val)
+	ld	(iy+val),a
 	endm
-
-XaZo:	macro	@n	;Calculates "X and Z or nZaY"
-	ld	a,(ix+@n)
-	and	(ix+8+@n)
-	or	(iy+@n)
-	ld	(iy+@n),a
+	; FIX: Sourceror, 15-3-2020
+	; Updated Macro to make is Sjasm Plus compatible
+	macro XaZo	val	;Calculates "X and Z or nZaY"
+	ld	a,(ix+val)
+	and	(ix+8+val)
+	or	(iy+val)
+	ld	(iy+val),a
 	endm
 
 FUN_G:	call	FUN_SETP
@@ -6103,12 +6109,13 @@ FUN_G:	call	FUN_SETP
 	ret
 
 	;--- Function H
-
-XxYxZ:	macro	@n	;Calculates "X xor Y xor Z"
-	ld	a,(ix+@n)
-	xor	(ix+4+@n)
-	xor	(ix+8+@n)
-	ld	(iy+@n),a
+	; FIX: Sourceror, 15-3-2020
+	; Updated Macro to make is Sjasm Plus compatible
+	macro XxYxZ	val	;Calculates "X xor Y xor Z"
+	ld	a,(ix+val)
+	xor	(ix+4+val)
+	xor	(ix+8+val)
+	ld	(iy+val),a
 	endm
 
 FUN_H:	call	FUN_SETP
@@ -6121,18 +6128,20 @@ FUN_H:	call	FUN_SETP
 	ret
 
 	;--- Function I
-
-XonZ:	macro	@n	;Calculates "X or (not Z)"
-	ld	a,(ix+8+@n)
+	; FIX: Sourceror, 15-3-2020
+	; Updated Macro to make is Sjasm Plus compatible
+	macro XonZ	val	;Calculates "X or (not Z)"
+	ld	a,(ix+8+val)
 	cpl
-	or	(ix+@n)
-	ld	(iy+@n),a
+	or	(ix+val)
+	ld	(iy+val),a
 	endm
-
-Yx:	macro	@n	;Calculates "Y xor XonZ"
-	ld	a,(ix+4+@n)
-	xor	(iy+@n)
-	ld	(iy+@n),a
+	; FIX: Sourceror, 15-3-2020
+	; Updated Macro to make is Sjasm Plus compatible
+	macro Yx	val	;Calculates "Y xor XonZ"
+	ld	a,(ix+4+val)
+	xor	(iy+val)
+	ld	(iy+val),a
 	endm
 
 FUN_I:	call	FUN_SETP
@@ -7864,8 +7873,13 @@ SDHCP_OKARP:
 SDHCP_OKFRM:
 
 	;Set option length
-
 	ld	(hl),b
+
+	; FIX: Sourceror, 15-3-2020
+	; Missing DHCP End option -> malformed DHCP packet
+	ld (ix),255 ; end option
+	inc ix
+
 SDHCP_OKREQOPS:
 
 	;--- Packet is complete: calculate resulting size
@@ -10452,11 +10466,12 @@ TCPIP_GET_CAPAB:
     ; - Obtain all the IPs automatically
     ; - Obtain all the IPs manually (except peer address unless we use PPP)
     ; - Use TLS for active connections, but only if a SOCKS server is configured
-
+	; FIX: Sourceror, 15-3-2020
+	; Updated binary value to make it Sjasm Plus compatible
     if LINK = 1
-    ld  hl,% 000000 0011110111
+    ld  hl,%0000000011110111
     else
-    ld  hl,% 000000 0011111111
+    ld  hl,%0000000011111111
     endif
 
     scf
@@ -10546,8 +10561,9 @@ GETCAP_1:
 	; - Send TCP data before ESTABLISHED
 	; - Send urgent TCP data
 	; - DNS query via local database
-
-	ld	hl,% 1111011010111101
+	; FIX: Sourceror, 15-3-2020
+	; Updated binary value to make it Sjasm Plus compatible
+	ld	hl,%1111011010111101
 
 	; Features flags ENABLED:
 	; - TCP user timeout is applied
@@ -10556,15 +10572,17 @@ GETCAP_1:
     ; - TTL can be specified in the parameters block of TCPIP_SEND_ECHO
 
 	if	LINK = 0
-
-	ld	de,% 000 0001100001001
+	; FIX: Sourceror, 15-3-2020
+	; Updated binary value to make it Sjasm Plus compatible
+	ld	de,%0000001100001001
 	ld	b,2	;PPP protocol
 
 	endif
 
 	if	LINK=1
-
-	ld	de,% 000 0001100001000
+	; FIX: Sourceror, 15-3-2020
+	; Updated binary value to make it Sjasm Plus compatible
+	ld	de,%0000001100001000
 	ld	b,3	;Ethernet protocol
 
 	endif
